@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h> // funções strcmp e strcpy
 #include <math.h>
+#include <tgmath.h>
 
 // Definição das variaveis que controlam a medição de tempo
 clock_t _ini, _fim;
@@ -11,12 +12,93 @@ clock_t _ini, _fim;
 typedef unsigned char bool;
 #define TRUE  1
 #define FALSE 0
+#define sucesso 0
+#define erro -1
+#define inserido -2
 
 // Definição do tipo string
 typedef char * string;
 
 #define MAX_STRING_LEN 20
 
+typedef struct {
+    unsigned info[150001];
+} hash;
+
+unsigned int h_div(unsigned int x, unsigned int i, unsigned int B)
+{
+    return ((x % B) + i) % B;
+}
+
+unsigned h_mul(unsigned x, unsigned i, unsigned B)
+{
+    const double A = 0.6180;
+    double aux = fmod(x * A, 1);
+    return  ((int) ((aux * B) + i)) % B;
+}
+
+void criar_hash(hash *t, unsigned int B) {
+    for (int i = 0; i < B; i++)
+        t->info[i] = -1; // -1: posicao vazia, nunca utilizada
+}
+
+int inserir_div(hash *tabela, unsigned int n, unsigned int B){
+    unsigned int pos;
+    for(unsigned int i = 0; i < B; i++){
+        pos = h_div(n, i, B);
+        if (tabela->info[pos] == -1 || tabela->info[pos] == -2){
+            tabela->info[pos] = n;
+            return sucesso;
+        }
+        if(tabela->info[pos] == n){
+            return inserido;
+        }
+    }
+    return erro;
+}
+
+int busca_div(hash *tabela, unsigned int n, unsigned int B){
+    unsigned int pos;
+    for(unsigned int i = 0; i < B; i++){
+        pos = h_div(n, i, B);
+        if(tabela->info[pos] == n){
+            return pos;
+        }
+        if(tabela->info[pos] == -1){
+            return erro;
+        }
+    }
+    return erro;
+}
+
+int inserir_mul(hash *tabela, unsigned int n, unsigned int B){
+    unsigned int pos;
+    for(unsigned int i = 0; i < B; i++){
+        pos = h_mul(n, i, B);
+        if (tabela->info[pos] == -1 || tabela->info[pos] == -2){
+            tabela->info[pos] = n;
+            return sucesso;
+        }
+        if(tabela->info[pos] == n){
+            return inserido;
+        }
+    }
+    return erro;
+}
+
+int busca_mul(hash *tabela, unsigned int n, unsigned int B){
+    unsigned int pos;
+    for(unsigned int i = 0; i < B; i++){
+        pos = h_mul(n, i, B);
+        if(tabela->info[pos] == n){
+            return pos;
+        }
+        if(tabela->info[pos] == -1){
+            return erro;
+        }
+    }
+    return erro;
+}
 
 unsigned converter(string s) {
    unsigned h = 0;
@@ -53,40 +135,40 @@ double finaliza_tempo()
     return ((double) (_fim - _ini)) / CLOCKS_PER_SEC;
 }
 
-unsigned h_div(unsigned x, unsigned i, unsigned B)
-{
-    return ((x % B) + i) % B;
-}
-
-unsigned h_mul(unsigned x, unsigned i, unsigned B)
-{
-    const double A = 0.6180;
-    return  ((int) ((fmod(x * A, 1) * B) + i)) % B;
-}
-
 
 int main(int argc, char const *argv[])
 {
-    unsigned N = 50000;
-    unsigned M = 70000;
-    unsigned B = 150001;
+    unsigned int N = 50000;
+    unsigned int M = 70000;
+    unsigned int B = 150001;
+    int h;
 
-    unsigned colisoes_h_div = 0;
+    unsigned int colisoes_h_div = 0;
     unsigned colisoes_h_mul = 0;
 
-    unsigned encontrados_h_div = 0;
-    unsigned encontrados_h_mul = 0;
+    unsigned int encontrados_h_div = 0;
+    unsigned int encontrados_h_mul = 0;
+
+    hash tabela;
+    int key;//apagar var depois, fiz para teste
 
     string* insercoes = ler_strings("strings_entrada.txt", N);
     string* consultas = ler_strings("strings_busca.txt", M);
 
 
     // cria tabela hash com hash por divisão
+    
+    criar_hash(&tabela, B);
 
     // inserção dos dados na tabela hash usando hash por divisão
     inicia_tempo();
     for (int i = 0; i < N; i++) {
         // inserir insercoes[i] na tabela hash
+        h = converter(insercoes[i]);
+        key = inserir_div(&tabela, h, B);
+        if(key == -2){
+            colisoes_h_div++;
+        }
     }
     double tempo_insercao_h_div = finaliza_tempo();
 
@@ -94,20 +176,32 @@ int main(int argc, char const *argv[])
     inicia_tempo();
     for (int i = 0; i < M; i++) {
         // buscar consultas[i] na tabela hash
+        h = converter(consultas[i]);
+        key = busca_div(&tabela, h, B);
+        if(key != -1){
+            encontrados_h_div++;
+        }
+
     }
     double tempo_busca_h_div = finaliza_tempo();
-
+    
     // limpa a tabela hash com hash por divisão
-
 
 
 
     // cria tabela hash com hash por divisão
 
+    criar_hash(&tabela, B);
+
     // inserção dos dados na tabela hash usando hash por multiplicação
     inicia_tempo();
     for (int i = 0; i < N; i++) {
         // inserir insercoes[i] na tabela hash
+        h = converter(insercoes[i]);
+        inserir_mul(&tabela, h, B);
+        if(key == -2){
+            colisoes_h_mul++;
+        }
     }
     double tempo_insercao_h_mul = finaliza_tempo();
 
@@ -115,11 +209,16 @@ int main(int argc, char const *argv[])
     inicia_tempo();
     for (int i = 0; i < M; i++) {
         // buscar consultas[i] na tabela hash
+        h = converter(consultas[i]);
+        key = busca_mul(&tabela, h, B);
+        if(key != -1){
+            encontrados_h_mul++;
+        }
     }
     double tempo_busca_h_mul = finaliza_tempo();
 
     // limpa a tabela hash com hash por multiplicação
-
+    
 
 
     printf("Hash por Divisão\n");
@@ -133,6 +232,6 @@ int main(int argc, char const *argv[])
     printf("Tempo de inserção   : %fs\n", tempo_insercao_h_mul);
     printf("Tempo de busca      : %fs\n", tempo_busca_h_mul);
     printf("Itens encontrados   : %d\n", encontrados_h_mul);
-
+    
     return 0;
 }

@@ -10,6 +10,26 @@ unsigned char typedef bool;
 #define TRUE  1
 #define FALSE 0
 
+void reorganiza_lista(int *lista, int pos){
+    int aux = lista[pos];
+    for (int i = pos; i > 0; i--){
+        lista[i] = lista[i-1];
+    }
+    lista[0] = aux;
+}
+
+int move_to_front(int *lista, int n, int tam){
+    int i = 0;
+    while(i < tam){
+        if(lista[i] == n){
+            reorganiza_lista(lista, i);
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
+
 int* ler_inteiros(const char * arquivo, const int n)
 {
     FILE* f = fopen(arquivo, "r");
@@ -40,6 +60,7 @@ int main(int argc, char const *argv[])
 {
     const int N = 50000;
     unsigned encontrados = 0;
+    int key;
 
     int* entradas = ler_inteiros("inteiros_entrada.txt", N);
     int* consultas = ler_inteiros("inteiros_busca.txt", N);
@@ -48,6 +69,10 @@ int main(int argc, char const *argv[])
     inicia_tempo();
     for (int i = 0; i < N; i++) {
         // buscar o elemento consultas[i] na entrada
+        key = move_to_front(entradas, consultas[i], N);
+        if(key != -1){
+            encontrados++;
+        }
     }
     double tempo_busca = finaliza_tempo();
 
