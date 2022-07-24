@@ -24,6 +24,22 @@ int* ler_inteiros(const char * arquivo, const int n)
     return inteiros;
 }
 
+int transposicao(int *lista, int buscado, int N){
+    int aux;
+    for (int i=0 ; i<N ; i++){
+        if (lista[i]==buscado){
+            // troca do elemento encontrado com o anterior
+            aux=lista[i];
+            lista[i]=lista[i-1];
+            lista[i-1]=aux;
+            // elemento encontrado
+            return i;
+        }
+    }
+    //elemento não encontrado
+    return -1;
+}
+
 void inicia_tempo()
 {
     srand(time(NULL));
@@ -48,6 +64,9 @@ int main(int argc, char const *argv[])
     inicia_tempo();
     for (int i = 0; i < N; i++) {
         // buscar o elemento consultas[i] na entrada
+        if (transposicao(entradas, consultas[i], N)!=-1){
+            encontrados++;
+        }    
     }
     double tempo_busca = finaliza_tempo();
 
