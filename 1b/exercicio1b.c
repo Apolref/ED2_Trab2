@@ -12,9 +12,7 @@ unsigned char typedef bool;
 
 void reorganiza_lista(int *lista, int pos){
     int aux = lista[pos];
-    for (int i = pos; i > 0; i--){
-        lista[i] = lista[i-1];
-    }
+    lista[pos] = lista[0];
     lista[0] = aux;
 }
 
