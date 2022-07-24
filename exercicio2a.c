@@ -84,7 +84,7 @@ int inserir_div(hash *tabela, string elem, unsigned B){
         if(tabela->dados[pos] == NULL){
             tabela->dados[pos] = (string) malloc(20 * sizeof(char));
             tabela->dados[pos] = elem;
-            return 1;
+            return i;
         }
         if(!strcmp(tabela->dados[pos], elem)){
             return -1;
@@ -116,7 +116,7 @@ int inserir_mul(hash *tabela, string elem, unsigned B){
         if(tabela->dados[pos] == NULL){
             tabela->dados[pos] = (string) malloc(20 * sizeof(char));
             tabela->dados[pos] = elem;
-            return 1;
+            return i;
         }
         if(!strcmp(tabela->dados[pos], elem)){
             return -1;
@@ -175,7 +175,7 @@ int main(int argc, char const *argv[])
     inicia_tempo();
     for (int i = 0; i < N; i++) {
         // inserir insercoes[i] na tabela hash
-        if(inserir_div(&tabela, insercoes[i], B)==1){
+        if(inserir_div(&tabela, insercoes[i], B)>0){
           colisoes_h_div++;
         }
     }
@@ -203,7 +203,7 @@ int main(int argc, char const *argv[])
     inicia_tempo();
     for (int i = 0; i < N; i++) {
         // inserir insercoes[i] na tabela hash
-        if(inserir_mul(&tabela, insercoes[i], B)==1){
+        if(inserir_mul(&tabela, insercoes[i], B)>0){
             colisoes_h_mul++;
         }
     }
