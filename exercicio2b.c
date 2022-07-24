@@ -81,32 +81,32 @@ int inserir_hash(hash *tabela, int B, string elem){
     unsigned posicao;
     unsigned h=converter(elem);
     for (int i=0; i<B; i++){
-        posicao = (h_mul(h,0,B)+i*h_div(h,0,B))%B; //hash duplo
+        posicao = (h_mul(h,0,B)+i*h_div(h,0,B))%B; //função hash duplo
         if(tabela->dados[posicao]==NULL){
             tabela->dados[posicao] = (string) malloc(20 * sizeof(char));
             tabela->dados[posicao] = elem;
-            return i;
+            return i; // retorna sempre 0 se não haver colisão
         }
         if(!strcmp(tabela->dados[posicao], elem)){
-            return -1;
+            return 0;
         }
     }
-    return -1;
+    return 0;
 }
 
 int busca_hash(hash *tabela, int B, string elem){
     unsigned posicao;
     unsigned h=converter(elem);
     for (int i=0; i<B; i++){
-      posicao = (h_mul(h,0,B)+i*h_div(h,0,B))%B; // hash duplo
+      posicao = (h_mul(h,0,B)+i*h_div(h,0,B))%B; // função hash duplo
         if(tabela->dados[posicao] == NULL){
-            return -1;
+            return 0; // elemento não faz parte da tabela
         }
        if(!strcmp(tabela->dados[posicao], elem)){
-            return 1;
+            return 1; // elemento encontrado
         }
     }
-    return -1;
+    return 0;
 }
 
 
@@ -137,18 +137,16 @@ int main(int argc, char const *argv[])
     // inserção dos dados na tabela hash
     inicia_tempo();
     for (int i = 0; i < N; i++) {
-
+      // inserir insercoes[i] na tabela hash
       if(inserir_hash(&tabela,B,insercoes[i])>0){
         colisoes++;
       }
-        // inserir insercoes[i] na tabela hash
     }
     double tempo_insercao = finaliza_tempo();
 
     // busca dos dados na tabela hash
     inicia_tempo();
     for (int i = 0; i < M; i++) {
-      
       // buscar consultas[i] na tabela hash
       if(busca_hash(&tabela,B,consultas[i]) == 1){
         encontrados++;
