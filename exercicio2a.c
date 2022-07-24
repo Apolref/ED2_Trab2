@@ -73,71 +73,71 @@ unsigned h_mul(unsigned x, unsigned i, unsigned B)
 void criar_hash(hash *t, unsigned int B) {
     t->dados = (string *) malloc(B* sizeof(string));
     for (int i = 0; i < B; i++)
-        t->dados[i] = NULL; //
+        t->dados[i] = NULL; // inicialização da tabela com NULL nos espaços vazios
 }
 
 int inserir_div(hash *tabela, string elem, unsigned B){
     unsigned pos;
-    unsigned h=converter(elem);
+    int h=converter(elem);
     for(unsigned int i = 0; i < B; i++){
-        pos = h_div(h, i, B);
+        pos = h_div(h, i, B);//calculo da função hash
         if(tabela->dados[pos] == NULL){
             tabela->dados[pos] = (string) malloc(20 * sizeof(char));
             tabela->dados[pos] = elem;
-            return i;
+            return i;// retorna sempre 0 se não haver colisão
         }
         if(!strcmp(tabela->dados[pos], elem)){
-            return -1;
+            return 0; // elemento ja presente
         }
     }
-    return -1;
+    return 0;
 }
 
 int busca_div(hash *tabela, string elem, unsigned B){
     unsigned pos;
-    unsigned h=converter(elem);
+    int h=converter(elem);
     for(unsigned int i = 0; i < B; i++){
-        pos = h_div(h, i, B);
+        pos = h_div(h, i, B);//calculo da função hash
         if(tabela->dados[pos] == NULL){
-            return -1;
+            return 0; // elemento não está presente na tabela
         }
        if(!strcmp(tabela->dados[pos], elem)){
-            return 1;
+            return 1; // elemento encontrado
         }
     }
-    return -1;
+    return 0;
 }
 
 int inserir_mul(hash *tabela, string elem, unsigned B){
     unsigned pos;
-    unsigned h=converter(elem);
+    int h=converter(elem);
     for(unsigned int i = 0; i < B; i++){
-        pos = h_mul(h, i, B);
+        pos = h_mul(h, i, B); //calculo da função hash
         if(tabela->dados[pos] == NULL){
             tabela->dados[pos] = (string) malloc(20 * sizeof(char));
             tabela->dados[pos] = elem;
-            return i;
+            return i; // retorna sempre 0 se não haver colisão
         }
         if(!strcmp(tabela->dados[pos], elem)){
-            return -1;
+            return 0;// elemento ja presente
         }
     }
-    return -1;
+    return 0;
 }
 
 int busca_mul(hash *tabela, string elem, unsigned B){
     unsigned pos;
-    unsigned h=converter(elem);
+    int h=converter(elem);
     for(unsigned int i = 0; i < B; i++){
-        pos = h_mul(h, i, B);
+        pos = h_mul(h, i, B); //calculo da função hash
         if(tabela->dados[pos] == NULL){
-            return -1;
+            return 0; //elemento não está presente na tabela
         }
        if(!strcmp(tabela->dados[pos], elem)){
-            return 1;
+            return 1; //elemento encontrado
         }
     }
-    return -1;
+    return 0;
 }
 
 
@@ -196,7 +196,6 @@ int main(int argc, char const *argv[])
     limpar_hash(&tabela, B);
 
     // cria tabela hash com hash por divisão
-    
     criar_hash(&tabela, B);
 
     // inserção dos dados na tabela hash usando hash por multiplicação
